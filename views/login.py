@@ -1,98 +1,112 @@
-# Import necessary modules from the Tkinter and PIL libraries
 from tkinter import *
-from tkinter.ttk import *
 from tkinter import messagebox
+from tkinter.ttk import Combobox, Radiobutton, Style  # Import Style from ttk
 from PIL import Image, ImageTk
+from datetime import date
+# Placeholder class
+class PlaceholderEntry(Entry):
+    def __init__(self, master=None, placeholder="", *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        self.placeholder = placeholder
+        self._placeholder_id = None
+        
+        # Configure initial appearance
+        self._set_placeholder()
+        
+        # Bind events
+        self.bind("<FocusIn>", self._on_focus_in)
+        self.bind("<FocusOut>", self._on_focus_out)
+    
+    def _set_placeholder(self):
+        if not self.get():
+            self.config(fg='grey')
+            self._placeholder_id = self.insert(0, self.placeholder)
+            self.icursor(0)
 
-# Constants for the window size
-WINDOW_WIDTH = 1000
-WINDOW_HEIGHT = 600
+    def _on_focus_in(self, event=None):
+        if self.get() == self.placeholder:
+            self.delete(0, "end")
+            self.config(fg='black')
 
-#Styling properties
-# style = Style()
-# style.theme_use('c') # To make Style modern 
+    def _on_focus_out(self, event=None):
+        if not self.get():
+            self._set_placeholder()
 
-class MedicalCenterGUI:
-    def __init__(self, master):
-        # Initialize the GUI window
-        self.master = master
-        self.master.title("Medical Center")
-        self.center_window()
-        self.load_background_image()
-        self.create_login_frame()
-        self.create_login_elements()
-        self.create_login_button()
+# Screen Center Function
+def center_screen(root, w, h):
+    screenwidth = root.winfo_screenwidth()
+    screenheight = root.winfo_screenheight()
+    
+    x = int((screenwidth - w) / 2)
+    y = int((screenheight - h) / 2)
+    
+    root.geometry(f"{w}x{h}+{x}+{y}")
 
-    # Center the GUI window on the screen
-    def center_window(self):
-        x = int((self.master.winfo_screenwidth() - WINDOW_WIDTH) / 2)
-        y = int((self.master.winfo_screenheight() - WINDOW_HEIGHT) / 2)
-        self.master.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}+{x}+{y}")
-        self.master.resizable(False, False)
+#Login Cheacker Function
+def checker():
+    username='admin'
+    password='admin'
 
-    # Load an image from a file path and resize it if necessary
-    def load_image(self, file_path, size=None):
-        try:
-            img = Image.open(file_path)
-            if size:
-                img = img.resize(size)
-            return ImageTk.PhotoImage(img)
-        except Exception as e:
-            raise RuntimeError(f"Error loading image: {e}")
+    if user_ent.get() !='Enter Username' and user_ent.get()==username and  pass_ent.get() !='**********' and pass_ent.get()==password:
+        messagebox.showinfo("Succeful", "Log in succesfully.")
+    
+    else:
+        messagebox.showerror("Error", "Wrong Username or Password.")
+# Initialize Tkinter root widget and title
+root = Tk()
+root.title("Login Screen")
+font1 = ('times new roman', 14, 'bold')  # Updated font to bold
 
-    # Load the background image for the GUI
-    def load_background_image(self):
-        self.bg_image = self.load_image('images/background.jpg', size=(1280, 700))
-        self.bg_label = Label(self.master, image=self.bg_image)
-        self.bg_label.place(x=0, y=0)
+#Login screen icon
+root.iconbitmap("images/Loginicon.ico")
 
-    # Create the login frame for the GUI
-    def create_login_frame(self):
-        self.login_frame = Frame(self.master)
-        self.style = Style()
-        self.style.configure('Tlogin_frame.TFrame', background='white',borderwidth=0, highlightthickness=0)
-        self.login_frame.place(anchor='center', relx=0.5, rely=0.5)
-        self.login_frame.configure(style='Tlogin_frame.TFrame')
+#Login screen background 
 
-    # Create the login elements (logo, username, password) within the login frame
-    def create_login_elements(self):
-        self.logo_image = self.load_image('images/icon_login.jpg')
-        self.logo_label = Label(self.login_frame, image=self.logo_image)
-        self.logo_label.grid(row=0, column=0, columnspan=2, pady=10)
+# Background Image
+img_path = "images/Loginscreen.png"  # Use raw string for Windows path
+img = Image.open(img_path)
+img = img.resize((1500, 750))
 
-        self.username_image = self.load_image('images/username.jpg')
-        self.username_label = Label(self.login_frame, image=self.username_image, text="Username", compound=LEFT, font=('times new roman', 15))
-        self.username_label.grid(row=1, column=0, padx=10, pady=10)
+# Convert image to PhotoImage
+img_tk = ImageTk.PhotoImage(img)
 
-        self.username_entry = Entry(self.login_frame, font=('times new roman', 15, 'bold'))
-        self.username_entry.grid(row=1, column=1, padx=10, pady=10)
+# Create a label with the image
+bglabel = Label(root, image=img_tk)
+bglabel.place(relwidth=1, relheight=1)
 
-        self.password_image = self.load_image('images/password.jpg')
-        self.password_label = Label(self.login_frame, image=self.password_image, text="Password", compound=LEFT, font=('times new roman', 15))
-        self.password_label.grid(row=2, column=0, pady=10)
+# Center the window
+center_screen(root, 1500, 750)
+root.resizable(False, False)
 
-        self.password_entry = Entry(self.login_frame, font=('times new roman', 15, 'bold'), show='*')
-        self.password_entry.grid(row=2, column=1, pady=10)
+#username Icon
+usericon_path = "images/usernameicon.png"  # Use raw string for Windows path
+Userimg = Image.open(usericon_path)
+Userimg = Userimg.resize((80, 80))
+Userimg_tk = ImageTk.PhotoImage(Userimg)
+icon_label = Label(root, image=Userimg_tk, relief='flat', borderwidth=0, highlightthickness=0)
+icon_label.place(x=300, y=245)
 
-    # Handle the login process
-    def login(self):
-        if self.username_entry.get() == '' or self.password_entry.get() == '':
-            messagebox.showerror('Error', 'Fields cannot be empty')
-        elif self.username_entry.get() == 'kareem' and self.password_entry.get() == '1234':
-            messagebox.showinfo('Success', 'Welcome')
-        else:
-            messagebox.showerror('Error', 'Please enter correct value')
+# Username entry
+user_ent = PlaceholderEntry(root, placeholder="Enter Username", font=font1)
+user_ent.place(x=390, y=270, width=200, height=30)
 
-    # Create the login button
-    def create_login_button(self):
-        self.login_button = Button(self.login_frame, text='Login', command=self.login)
-        self.style = Style()
-        self.style.theme_use('calm')
-        self.style.configure('TButton', background='blue',borderwidth=0)
-        self.login_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+#Password icon
+passicon_path = "images/Passwordicon.png"  # Use raw string for Windows path
+passimg = Image.open(passicon_path)
+passimg = passimg.resize((80, 80))
+passimg_tk = ImageTk.PhotoImage(passimg)
+icon_labe = Label(root, image=passimg_tk, relief='flat', borderwidth=0, highlightthickness=0)
+icon_labe.place(x=300, y=375)
 
-# Run the main loop of the GUI
-if __name__ == "__main__":
-    root = Tk()
-    app = MedicalCenterGUI(root)
-    root.mainloop()
+#password entry
+pass_ent = PlaceholderEntry(root, placeholder="**********", font=font1,show='*')
+pass_ent.place(x=390, y=400, width=200, height=30)
+
+#sign in Button
+addbtn=Button(root, text = "Add", font=font1,command=checker, width=30,height=50, bg='#37B7C3', fg='#EBF4F6')
+addbtn.place(x=430,y=500,width=100,height=30)
+
+
+
+# Start Tkinter event loop
+root.mainloop()
