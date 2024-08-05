@@ -1,17 +1,18 @@
 import tkinter as tk
-from tkinter import RIGHT, VERTICAL, Y, Scrollbar, ttk
+from tkinter import *
+from tkinter.ttk import *
 from tkinter import messagebox
 
 # Create the main window
 root = tk.Tk()
 root.title("Doctor Info")
-root.geometry("1000x800")  # Set the window size
+# root.geometry("1000x800")  # Set the window size
 
 # Set the background color of the window
 root.configure(bg='#eaf6f8')
 
 # Create the Treeview widget
-style = ttk.Style()
+style = Style()
 style.theme_use('clam')
 
 #Buttons Styling
@@ -22,8 +23,19 @@ style.configure("TButton",
                 borderwidth = 0,
                 ) 
 style.map("TButton", # Style On Hovering Buttons
-          background=[('active', '#088395')],
-          foreground=[('active', 'white')])
+        background=[('active', '#088395')],
+        foreground=[('active', 'white')])
+
+# Backward Button 
+back_button = Button(root , text="<" , width=4,style="TButton",
+                    cursor="hand2") #Pointer cursor
+# Display Backward Button
+back_button.pack(anchor="w" , pady=10 , padx=5)
+
+# Table and Scroll bar Frame
+table_frame = Frame(root)
+table_frame.pack()
+
 
 # Table Styling
 style.configure("Treeview", # Rows and Table Styling
@@ -41,31 +53,50 @@ style.configure("Treeview.Heading", # Headings Styling
                 )
 
 style.map("Treeview", # Selecting rows Styling
-          background=[('selected', '#ffc300')], 
-          foreground=[('selected', 'black')])
+        background=[('selected', '#ffc300')], 
+        foreground=[('selected', 'black')])
 
 style.map("Treeview.Heading",  # Selecting Headings Styling
-          background=[('selected', '#071952')], 
-          foreground=[('selected', 'white')])
+        background=[('selected', '#071952')], 
+        foreground=[('selected', 'white')])
 
 
 
-tree = ttk.Treeview(root, columns=('Id', 'Name', 'National Id', 'Age', 'Specialty', 'Phone Number'), show='headings')
-tree.pack(side='left',expand=True, fill='both', padx=10, pady=10)
+tree = Treeview(table_frame, columns=('Id', 'Name', 'National Id', 'Age', 'Specialty', 'Phone Number'), show='headings')
 
 # Define the column headings
 columns = ['Id', 'Name', 'National Id', 'Age', 'Specialty', 'Phone Number']
 for col in columns:
     tree.heading(col, text=col)
 
-# Define the column widths
-tree.column('Id', width=50)
-tree.column('Name', width=150)
-tree.column('National Id', width=100)
-tree.column('Age', width=50)
-tree.column('Specialty', width=150)
-tree.column('Phone Number', width=100)
+#
+tree.heading("Name" , anchor="w")
+tree.heading("National Id" , anchor="w")
+tree.heading("Phone Number" , anchor="w")
+tree.heading("Specialty" , anchor="w")
 
+# Define the column widths
+tree.column('Id', width=50 , anchor="center")
+tree.column('Name', width=200)
+tree.column('National Id', width=150)
+tree.column('Age', width=70 , anchor="center")
+tree.column('Specialty', width=150)
+tree.column('Phone Number', width=150)
+
+
+# Create vertical scrollbar
+scroll = Scrollbar(table_frame, orient=VERTICAL, command=tree.yview ,
+                    style="Vertical.TScrollbar")
+# Display Scroll Bar
+scroll.pack(side=RIGHT, fill=Y)
+tree.configure(yscrollcommand=scroll.set) # 
+# Scroll bar Styling
+style.configure("Vertical.TScrollbar",
+                gripcount=0, # number of '-' in the scroll bar
+                background="lightgray", # color of scroll bar and arrows background
+                troughcolor="darkgray", # color of background
+                arrowcolor="black",
+                width=16)
 # Add sample data to the Treeview
 data = [
     (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
@@ -158,6 +189,9 @@ data = [
 for item in data:
     tree.insert('', 'end', values=item)
 
+# Display Table
+tree.pack()
+
 # Function to delete an item
 def delete_item():
     def confirm_delete():
@@ -184,22 +218,15 @@ def delete_item():
     confirm_button = tk.Button(frame, text="Delete", command=confirm_delete, bg='#0a2540', fg='white', font=('Helvetica', 12), width=8, height=1)
     confirm_button.pack(side='left', padx=5)
 
-
-scroll = Scrollbar(root, orient='vertical', command=tree.yview)
-# Display Scroll Bar
-scroll.pack(side=RIGHT, fill=Y)
-tree.configure(yscrollcommand=scroll.set)
-
-
 # Create Edit and Delete buttons
 frame = tk.Frame(root, bg='#eaf6f8')
 frame.pack(pady=10)
 
-edit_button = tk.Button(frame, text="Edit", bg='#0a2540', fg='white', font=('Helvetica', 12), width=8, height=1)
-edit_button.pack( pady=10,padx=10)
+edit_button = tk.Button(frame, text="Edit", bg='#0a2540', fg='white', font=('Helvetica', 12), width=8, height=1 , cursor="hand2")
+edit_button.pack(padx=10 , side="left")
 
-delete_button = tk.Button(frame, text="Delete", bg='#0a2540', fg='white', font=('Helvetica', 12), width=8, height=1, command=delete_item)
-delete_button.pack(pady=10,padx=10)
+delete_button = tk.Button(frame, text="Delete", bg='#0a2540', fg='white', font=('Helvetica', 12), width=8, height=1, command=delete_item , cursor="hand2")
+delete_button.pack(padx=10 , side="right")
 
 # Run the application
 root.mainloop()
