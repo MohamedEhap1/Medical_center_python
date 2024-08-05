@@ -87,6 +87,7 @@ class MedicalCenterGUI:
     def create_login_button(self):
         self.login_button = Button(self.login_frame, text='Login', command=self.login)
         self.style = Style()
+        self.style.theme_use('calm')
         self.style.configure('TButton', background='blue',borderwidth=0)
         self.login_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
