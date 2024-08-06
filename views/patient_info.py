@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter.ttk import *
+from PIL import Image, ImageTk
 
 root = Tk()
 root.config(background="#EBF4F6") # frame background color
@@ -17,18 +18,39 @@ style.configure("TButton",
                 borderwidth = 0,
                 ) 
 style.map("TButton", # Style On Hovering Buttons
-          background=[('active', '#088395')],
-          foreground=[('active', 'white')])
+        background=[('active', '#088395')],
+        foreground=[('active', 'white')])
 
 
 
 
-# Backward Button 
-back_button = Button(root , text="<" , width=4,style="TButton",
-                      cursor="hand2") #Pointer cursor
-# Display Backward Button
+
+# back button
+back_img = Image.open("images/BackBtn.png")
+back_tk = ImageTk.PhotoImage(back_img)
+back_button = Button(root, image=back_tk)
 back_button.pack(anchor="w" , pady=10 , padx=5)
 
+
+
+# Search Frame
+search_frame = Frame(root)
+search_frame.pack(anchor="center")
+
+search_button = Button(search_frame , cursor="hand2" , text="Search" ,
+                        padding=3) # create search button
+search_entry = Entry(search_frame , style="TEntry") # create search input
+
+search_entry.pack(side="left" , padx = "5" , pady=10)
+search_button.pack(side="right" , padx="5" , pady=10)
+
+# Entry Styling
+style.configure("TEntry",
+                padding = 5,
+                fieldbackground = "white",
+                font = ("Tahoma" , 12),
+                bordercolor = "#071952"
+                )
 
 
 
@@ -42,7 +64,7 @@ cols = ("id" , "name" , "national_id" , "age" , "blood_type" ,
 
 #Create Table
 table = Treeview(table_frame , columns=cols , show="headings" ,
-                  style="Treeview")
+                style="Treeview")
 
 #Columns Headings
 table.heading("id" , text="Id" , anchor="center")
@@ -78,12 +100,12 @@ style.configure("Treeview.Heading", # Headings Styling
                 )
 
 style.map("Treeview", # Selecting rows Styling
-          background=[('selected', '#ffc300')], 
-          foreground=[('selected', 'black')])
+        background=[('selected', '#ffc300')], 
+        foreground=[('selected', 'black')])
 
 style.map("Treeview.Heading",  # Selecting Headings Styling
-          background=[('selected', '#071952')], 
-          foreground=[('selected', 'white')])
+        background=[('selected', '#071952')], 
+        foreground=[('selected', 'white')])
 
 
 # Create vertical scrollbar
