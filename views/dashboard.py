@@ -3,6 +3,7 @@ from tkinter import messagebox
 from tkinter.ttk import Combobox, Radiobutton, Style  # Import Style from ttk
 from PIL import Image, ImageTk
 from datetime import date
+import AddDoctor
 # Placeholder class
 class PlaceholderEntry(Entry):
     def __init__(self, master=None, placeholder="", *args, **kwargs):
@@ -72,11 +73,13 @@ root.resizable(False, False)
 
 
 #Add Doctor button
+
+
 btnx=680
 btny=200
 img_add = Image.open("images/Add doctor btn.png")
 img_tk_Add_doc = ImageTk.PhotoImage(img_add)
-AddDoc_button = Button(root, image=img_tk_Add_doc)
+AddDoc_button = Button(root, image=img_tk_Add_doc,command=lambda: AddDoctor)
 AddDoc_button.place(x=btnx, y=btny)
 #Add Patient button
 img_add = Image.open("images/Add patient btn.png")
