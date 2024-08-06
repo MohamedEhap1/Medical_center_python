@@ -3,7 +3,7 @@ from tkinter import messagebox
 from tkinter.ttk import Combobox, Radiobutton, Style  # Import Style from ttk
 from PIL import Image, ImageTk
 from datetime import date
-import AddDoctor
+
 # Placeholder class
 class PlaceholderEntry(Entry):
     def __init__(self, master=None, placeholder="", *args, **kwargs):
@@ -73,28 +73,39 @@ root.resizable(False, False)
 
 
 #Add Doctor button
-
-
 btnx=680
 btny=200
+
+def addDoc():
+    root.destroy()
+    import AddDoctor
 img_add = Image.open("images/Add doctor btn.png")
 img_tk_Add_doc = ImageTk.PhotoImage(img_add)
-AddDoc_button = Button(root, image=img_tk_Add_doc,command=lambda: AddDoctor)
+AddDoc_button = Button(root, image=img_tk_Add_doc,command=addDoc)
 AddDoc_button.place(x=btnx, y=btny)
 #Add Patient button
+def addPat():
+    root.destroy()
+    import Addpatient
 img_add = Image.open("images/Add patient btn.png")
 img_tk_Add_pat = ImageTk.PhotoImage(img_add)
-AddDoc_button = Button(root, image=img_tk_Add_pat)
+AddDoc_button = Button(root, image=img_tk_Add_pat,command=addPat)
 AddDoc_button.place(x=btnx, y=btny+100)
 #Doctor info button
+def docInfo():
+    root.destroy()
+    import doctor_info
 img_add = Image.open("images/Doctor Info btn.png")
 img_tk_DocInfo = ImageTk.PhotoImage(img_add)
-AddDoc_button = Button(root, image=img_tk_DocInfo)
+AddDoc_button = Button(root, image=img_tk_DocInfo,command=docInfo)
 AddDoc_button.place(x=btnx, y=btny+200)
 #patient info button
+def patInfo():
+    root.destroy()
+    import patient_info
 img_add = Image.open("images/Patient info btn.png")
 img_tk_PatInfo = ImageTk.PhotoImage(img_add)
-AddDoc_button = Button(root, image=img_tk_PatInfo)
+AddDoc_button = Button(root, image=img_tk_PatInfo,command=patInfo)
 AddDoc_button.place(x=btnx, y=btny+300)
 
 # Start Tkinter event loop

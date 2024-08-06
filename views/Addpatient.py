@@ -214,9 +214,12 @@ date_ent.place(x=1050, y=155, width=225, height=30)
 addbtn=Button(root, text = "Add", font=font1, width=30,height=50,command=checker, bg='#37B7C3', fg='#EBF4F6')
 addbtn.place(x=1050,y=400,width=200,height=30)
 # back button
+def backBtn():
+    root.destroy()
+    import dashboard
 back_img = Image.open("images/BackBtn.png")
 back_tk = ImageTk.PhotoImage(back_img)
-back_button = Button(root, image=back_tk,relief='flat')
+back_button = Button(root, image=back_tk,relief='flat',command=backBtn)
 back_button.place(x=10, y=10)
 # Start Tkinter event loop
 root.mainloop()

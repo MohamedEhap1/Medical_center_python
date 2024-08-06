@@ -28,9 +28,12 @@ style.map("TButton", # Style On Hovering Buttons
         foreground=[('active', 'white')])
 
 # back button
+def backBtn():
+    root.destroy()
+    import dashboard
 back_img = Image.open("images/BackBtn.png")
 back_tk = ImageTk.PhotoImage(back_img)
-back_button = Button(root, image=back_tk)
+back_button = Button(root, image=back_tk,command=backBtn)
 back_button.pack(anchor="w" , pady=10 , padx=5)
 
 # Search Frame

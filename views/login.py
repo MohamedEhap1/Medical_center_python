@@ -49,7 +49,8 @@ def checker():
 
     if user_ent.get() !='Enter Username' and user_ent.get()==username and  pass_ent.get() !='**********' and pass_ent.get()==password:
         messagebox.showinfo("Succeful", "Log in succesfully.")
-    
+        root.destroy()
+        import dashboard
     else:
         messagebox.showerror("Error", "Wrong Username or Password.")
 # Initialize Tkinter root widget and title
