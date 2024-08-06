@@ -3,6 +3,7 @@ from tkinter import messagebox
 from tkinter.ttk import Combobox, Radiobutton, Style  # Import Style from ttk
 from PIL import Image, ImageTk
 from datetime import date
+import sqlite3
 # Placeholder class
 class PlaceholderEntry(Entry):
     def __init__(self, master=None, placeholder="", *args, **kwargs):
@@ -35,16 +36,21 @@ class PlaceholderEntry(Entry):
 #reset Frame
 def reset_frame():
     user_ent.delete(0, "end")
+    user_ent.insert(0,'Enter patient name')
     phone_ent.delete(0, "end")
+    phone_ent.insert(0,'Enter patient phone')
     id_ent.delete(0, "end")
+    id_ent.insert(0,'Enter patient ID')
     age_ent.delete(0, "end")
+    age_ent.insert(0,'Enter patient Age')
     date_ent.config(state='normal')
     date_ent.delete(0, "end")
     date_ent.insert(0, date.today().strftime('%Y-%m-%d'))
     date_ent.config(state='readonly')
     combo_stat.set('Select Status')
     combo1_stat.set('Select Doctor')
-    radio_var.set(1)
+    combo2_stat.set('Select blood type')
+    radio_var.set('Male')
 
 # Screen Center Function
 def center_screen(root, w, h):
@@ -56,10 +62,26 @@ def center_screen(root, w, h):
     
     root.geometry(f"{w}x{h}+{x}+{y}")
 
+
+#connect to the database
+conn=sqlite3.connect('Medical_Center.db') 
+# get a cursur 
+cur=conn.cursor()
+
+
+
 #Button Add command
 def checker():
-    if user_ent.get() !='Enter patient name' and phone_ent.get() != 'Enter patient phone' and id_ent.get()!='Enter patient ID' and age_ent.get()!='Enter patient Age' and combo_stat.get()!='Select Status' and combo1_stat.get()!='Select Doctor' :
-        messagebox.showinfo("Succeful", "Data added succefully.")
+    if user_ent.get() !='Enter patient name' and phone_ent.get() != 'Enter patient phone' and id_ent.get()!='Enter patient ID' and age_ent.get()!='Enter patient Age' and combo_stat.get()!='Select Status' and combo1_stat.get()!='Select Doctor'and combo2_stat.get()!='Select blood type'and date_ent.get()!='' :
+        try:
+            cur.execute('''INSERT INTO patient(id,name,age,phone,blood_type,gender,status,nameDoc,datee)
+                        
+                        VALUES(?,?,?,?,?,?,?,?,?)
+                        ''',(id_ent.get(),user_ent.get(),age_ent.get(), phone_ent.get(),combo2_stat.get(),radio_var.get(),combo_stat.get(),combo1_stat.get(),date_ent.get()))
+            conn.commit()
+            messagebox.showinfo("Succeful", "Data added succefully.")
+        except:
+            messagebox.showerror("Failed", "Please check your data entry.")
         reset_frame()
     else:
         messagebox.showerror("Error", "Please make sure to fill all the required info .")
@@ -132,12 +154,12 @@ gen_icon_label = Label(root, image=genimg_tk, relief='flat', borderwidth=0, high
 gen_icon_label.place(x=970, y=252)
 
 # Gender radiobuttons
-radio_var = IntVar()
-radio_var.set(1)
+radio_var = StringVar()
+radio_var.set('Male')
 
 # Create and place radiobuttons
-rbtn1 = Radiobutton(root, text="Male", value=1, variable=radio_var)
-rbtn2 = Radiobutton(root, text="Female", value=2, variable=radio_var)
+rbtn1 = Radiobutton(root, text="Male", value='Male', variable=radio_var)
+rbtn2 = Radiobutton(root, text="Female", value='Female', variable=radio_var)
 rbtn1.pack(padx=110,pady=110)
 rbtn2.pack(padx=110,pady=110)
 rbtn1.place(x=1050, y=274, width=100, height=30)
@@ -182,15 +204,29 @@ combo_stat_var.set('Select Status')
 combo_stat = Combobox(root, values=('White', 'Red', 'Blue','purple','yellow'), textvariable=combo_stat_var, state='readonly')
 combo_stat.place(x=300,y=400,width=200,height=30)
 
+# blood_type  icon
+blood_type_path = "images/BloodType.png"  # Use raw string for Windows path
+blood_type_img = Image.open(blood_type_path)
+blood_type_img = blood_type_img.resize((80, 80))
+blood_type_tk = ImageTk.PhotoImage(blood_type_img)
+blood_type_label = Label(root, image=blood_type_tk, relief='flat', borderwidth=0, highlightthickness=0)
+blood_type_label.place(x=970, y=374)
+
+#blood_type combo box
+combo2_stat_var = StringVar()
+combo2_stat_var.set('Select bllod type')
+combo2_stat = Combobox(root, values=('A ', 'B', 'O','A+','C'), textvariable=combo2_stat_var, state='readonly')
+combo2_stat.place(x=1050,y=400,width=200,height=30)
+
 # Doctor Name icon
 doctor_name_path = "images/Doctor Icon.png"  # Use raw string for Windows path
 doctor_name_img = Image.open(doctor_name_path)
 doctor_name_img = doctor_name_img.resize((80, 80))
 doctor_name_tk = ImageTk.PhotoImage(doctor_name_img)
-phone_icon_label = Label(root, image=doctor_name_tk, relief='flat', borderwidth=0, highlightthickness=0)
-phone_icon_label.place(x=620, y=374)
+doctor_name_label = Label(root, image=doctor_name_tk, relief='flat', borderwidth=0, highlightthickness=0)
+doctor_name_label.place(x=620, y=374)
 
-#bloodType combo box
+#Doctor Name combo box
 combo1_stat_var = StringVar()
 combo1_stat_var.set('Select Doctor')
 combo1_stat = Combobox(root, values=('Ahmed ', 'Hassan', 'Mohamed','Weliam','cris'), textvariable=combo1_stat_var, state='readonly')
@@ -212,7 +248,7 @@ date_ent.place(x=1050, y=155, width=225, height=30)
 
 #add button
 addbtn=Button(root, text = "Add", font=font1, width=30,height=50,command=checker, bg='#37B7C3', fg='#EBF4F6')
-addbtn.place(x=1050,y=400,width=200,height=30)
+addbtn.place(x=700,y=500,width=200,height=30)
 # back button
 def backBtn():
     root.destroy()
@@ -223,5 +259,5 @@ back_button = Button(root, image=back_tk,relief='flat',command=backBtn)
 back_button.place(x=10, y=10)
 # Start Tkinter event loop
 root.mainloop()
-
+conn.close()
 

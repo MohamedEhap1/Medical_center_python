@@ -3,6 +3,7 @@ from tkinter import messagebox
 from tkinter.ttk import Combobox, Radiobutton, Style  # Import Style from ttk
 from PIL import Image, ImageTk
 from datetime import date
+import sqlite3
 # Placeholder class
 class PlaceholderEntry(Entry):
     def __init__(self, master=None, placeholder="", *args, **kwargs):
@@ -35,9 +36,13 @@ class PlaceholderEntry(Entry):
 #reset Frame
 def reset_frame():
     user_ent.delete(0, "end")
+    user_ent.insert(0,"Enter Doctor name")
     phone_ent.delete(0, "end")
+    phone_ent.insert(0, "Enter Doctor phone")
     id_ent.delete(0, "end")
+    id_ent.insert(0, "Enter Doctor ID")
     age_ent.delete(0, "end")
+    age_ent.insert(0, "Enter Doctor Age")
     date_ent.config(state='normal')
     date_ent.delete(0, "end")
     date_ent.insert(0, date.today().strftime('%Y-%m-%d'))
@@ -56,10 +61,25 @@ def center_screen(root, w, h):
     
     root.geometry(f"{w}x{h}+{x}+{y}")
 
+
+#connect to the database
+conn=sqlite3.connect('Medical_Center.db') 
+# get a cursur 
+cur=conn.cursor()
+
+
+
 #Button Add command
 def checker():
-    if user_ent.get() !='Enter Doctor name' and phone_ent.get() != 'Enter Doctor phone' and id_ent.get()!='Enter Doctor ID' and age_ent.get()!='Enter Doctor Age' and combo_stat.get()!='Select Status':
-        messagebox.showinfo("Succeful", "Data added succefully.")
+    if user_ent.get() !='Enter Doctor name' and phone_ent.get() != 'Enter Doctor phone' and id_ent.get()!='Enter Doctor ID' and age_ent.get()!='Enter Doctor Age' and combo_stat.get()!='Medical Specialty':
+        try:
+            cur.execute('''INSERT INTO doctor(id,name,age,phone,gender,medical_speciality,datee)
+                        VALUES(?,?,?,?,?,?,?)
+                        ''',(id_ent.get(),user_ent.get(),age_ent.get(), phone_ent.get(),radio_var.get(),combo_stat.get(),date_ent.get()))
+            conn.commit()
+            messagebox.showinfo("Succeful", "Data added succefully.")
+        except:
+            messagebox.showerror("Failed", "Please check your data entry.")
         reset_frame()
     else:
         messagebox.showerror("Error", "Please make sure to fill all the required info .")
@@ -214,7 +234,7 @@ addbtn=Button(root, text = "Add", font=font1, width=30,height=50,command=checker
 addbtn.place(x=1050,y=400,width=200,height=30)
 # back button
 def backBtn():
-    # root.destroy()
+    root.destroy()
     import dashboard
 back_img = Image.open("images/BackBtn.png")
 back_tk = ImageTk.PhotoImage(back_img)
@@ -222,5 +242,5 @@ back_button = Button(root, image=back_tk,relief='flat',command=backBtn)
 back_button.place(x=10, y=10)
 # Start Tkinter event loop
 root.mainloop()
-
+conn.close()
 

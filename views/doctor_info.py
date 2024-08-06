@@ -1,20 +1,25 @@
-import tkinter as tk
 from tkinter import *
 from tkinter.ttk import *
-from tkinter import messagebox
 from PIL import Image, ImageTk
-
-# Create the main window
-root = tk.Tk()
+from tkinter import messagebox
+import sqlite3
+root = Tk()
+root.config(background="#EBF4F6") # frame background color
 root.title("Doctor Info")
-# root.geometry("1000x800")  # Set the window size
 
-# Set the background color of the window
-root.configure(bg='#EBF4F6')
 
-# Create the Treeview widget
+#connect to the database
+conn=sqlite3.connect('Medical_Center.db') 
+# get a cursur 
+cur=conn.cursor()
+# get the data of all patients
+cur.execute('SELECT * From doctor')
+# fetsh the result of the query
+results=cur.fetchall()
+
+#Styling properties
 style = Style()
-style.theme_use('clam')
+style.theme_use("clam") # To make Style modern 
 
 #Buttons Styling
 style.configure("TButton", 
@@ -27,22 +32,50 @@ style.map("TButton", # Style On Hovering Buttons
         background=[('active', '#088395')],
         foreground=[('active', 'white')])
 
+
+
+# Table and Scroll bar Frame
+table_frame = Frame(root)
+#Table Columns
+cols = ("id" , "name"  , "age" , 
+        "phone","number_patient" ,"gender" , "medical_speciality","datee")
+
+#Create Table
+table = Treeview(table_frame , columns=cols , show="headings" ,
+                style="Treeview")
+
+
 # back button
 def backBtn():
-    root.destroy()
-    import dashboard
+        root.destroy()
+        import dashboard
 back_img = Image.open("images/BackBtn.png")
 back_tk = ImageTk.PhotoImage(back_img)
 back_button = Button(root, image=back_tk,command=backBtn)
 back_button.pack(anchor="w" , pady=10 , padx=5)
 
+
+
 # Search Frame
 search_frame = Frame(root)
 search_frame.pack(anchor="center")
 
-search_button = Button(search_frame , cursor="hand2" , text="Search" ,
-                        padding=3) # create search button
-search_entry = Entry(search_frame , style="TEntry") # create search input
+search_entry = Entry(search_frame , style="TEntry",) # create search input
+def search_btn():
+        try:
+                cur.execute('SELECT * FROM doctor WHERE lower(name) LIKE ?', (f'%{search_entry.get().lower()}%',))
+                conn.commit()
+                for row in table.get_children():
+                        table.delete(row)
+        
+                results=cur.fetchall()
+                # Iterate over the rows and display the results.
+                for row in results:
+                        table.insert("", "end", values=row)
+        except :
+                messagebox.showwarning("Entry Error", "Please Enter a Name of Doctor to search.")
+search_button = Button(search_frame , cursor="hand2" , text="Search Name" ,
+                        padding=3,command=search_btn) # create search button
 
 search_entry.pack(side="left" , padx = "5" , pady=10)
 search_button.pack(side="right" , padx="5" , pady=10)
@@ -54,14 +87,31 @@ style.configure("TEntry",
                 font = ("Tahoma" , 12),
                 bordercolor = "#071952"
                 )
-# Frame Styling
-style.configure("TFrame",
-                background = "#EBF4F6")
 
-# Table and Scroll bar Frame
-table_frame = Frame(root)
+
+
 table_frame.pack()
 
+
+#Columns Headings
+table.heading("id" , text="Id" , anchor="center")
+table.heading("name" , text="Name" , anchor="w")
+table.heading("age" , text="Age" , anchor="center")
+table.heading("phone" , text="Phone Number" , anchor="w")
+table.heading("number_patient" , text="Number Patient" , anchor="center")
+table.heading("gender" , text="Gender" , anchor="w")
+table.heading("medical_speciality" , text="Medical Speciality" , anchor="w")
+table.heading("datee" , text="Date" , anchor="w")
+
+# Define the column widths and other properties
+table.column("id", width=50, stretch=NO , anchor="center")
+table.column("name", width=200, stretch=NO)
+table.column("age", width=70, stretch=NO , anchor="center")
+table.column("phone", width=150, stretch=NO )
+table.column("number_patient", width=200, stretch=NO , anchor="center")
+table.column("gender", width=150, stretch=NO )
+table.column("medical_speciality", width=150, stretch=NO )
+table.column("datee", width=150, stretch=NO )
 
 # Table Styling
 style.configure("Treeview", # Rows and Table Styling
@@ -87,35 +137,11 @@ style.map("Treeview.Heading",  # Selecting Headings Styling
         foreground=[('selected', 'white')])
 
 
-
-tree = Treeview(table_frame, columns=('Id', 'Name', 'National Id', 'Age', 'Specialty', 'Phone Number'), show='headings')
-
-# Define the column headings
-columns = ['Id', 'Name', 'National Id', 'Age', 'Specialty', 'Phone Number']
-for col in columns:
-    tree.heading(col, text=col)
-
-#
-tree.heading("Name" , anchor="w")
-tree.heading("National Id" , anchor="w")
-tree.heading("Phone Number" , anchor="w")
-tree.heading("Specialty" , anchor="w")
-
-# Define the column widths
-tree.column('Id', width=50 , anchor="center")
-tree.column('Name', width=200)
-tree.column('National Id', width=150)
-tree.column('Age', width=70 , anchor="center")
-tree.column('Specialty', width=150)
-tree.column('Phone Number', width=150)
-
-
 # Create vertical scrollbar
-scroll = Scrollbar(table_frame, orient=VERTICAL, command=tree.yview ,
-                    style="Vertical.TScrollbar")
+scroll = Scrollbar(table_frame, orient=VERTICAL, command=table.yview ,
+                style="Vertical.TScrollbar")
 # Display Scroll Bar
-scroll.pack(side=RIGHT, fill=Y)
-tree.configure(yscrollcommand=scroll.set) # 
+table.configure(yscrollcommand=scroll.set) # 
 # Scroll bar Styling
 style.configure("Vertical.TScrollbar",
                 gripcount=0, # number of '-' in the scroll bar
@@ -123,136 +149,45 @@ style.configure("Vertical.TScrollbar",
                 troughcolor="darkgray", # color of background
                 arrowcolor="black",
                 width=16)
-# Add sample data to the Treeview
-data = [
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    (1, 'John Doe', '123456', 25, 'Cardiology', '555-1234'),
-    (2, 'Jane Smith', '654321', 30, 'Neurology', '555-5678'),
-    (3, 'Alice Johnson', '789012', 40, 'Pediatrics', '555-9012'),
-    (4, 'Bob Brown', '345678', 50, 'Dermatology', '555-3456'),
-    # Add more data as needed
-]
 
-for item in data:
-    tree.insert('', 'end', values=item)
+# Iterate over the rows and display the results.
+for row in results:
+        table.insert("", "end", values=row)
 
+scroll.pack(side=RIGHT, fill=Y)
 # Display Table
-tree.pack()
+table.pack()
 
-# Function to delete an item
+# Frame for delete and edit
+buttons_frame = Frame(root) 
+
+# Buttons Frame Styling
+style.configure("TFrame",
+                background = "#EBF4F6")
+# delete methode
 def delete_item():
-    def confirm_delete():
-        id_to_delete = int(entry_id.get())
-        messagebox.showinfo("Success", f"Simulated deletion of item with ID {id_to_delete}")
-        delete_window.destroy()
+        try:
+                selected_item = table.selection()[0]
+                selected_doctor_id = table.item(selected_item)['values'][0]
 
-    # Create the delete confirmation window
-    delete_window = tk.Toplevel(root)
-    delete_window.title("Delete Confirmation")
-    delete_window.geometry("300x150")
-    delete_window.configure(bg='#eaf6f8')
+                cur.execute('DELETE FROM doctor WHERE id=?', (selected_doctor_id,))
+                conn.commit()
+                
 
-    tk.Label(delete_window, text="Enter ID to delete:", bg='#eaf6f8').pack(pady=10)
-    entry_id = tk.Entry(delete_window)
-    entry_id.pack(pady=5)
+                messagebox.showinfo('Notification', 'The Doctor was deleted successfully')
+                table.delete(selected_item)
+        except IndexError:
+                messagebox.showwarning("Selection Error", "Please select a Doctor to delete.")
+# Delete and Edit Buttons
+delete_button = Button(buttons_frame , text="Delete" , cursor="hand2" , style="TButton",command=delete_item)
+edit_button = Button(buttons_frame , text="Edit" , cursor="hand2" , style="TButton")
 
-    frame = tk.Frame(delete_window, bg='#eaf6f8')
-    frame.pack(pady=10)
+# Show Buttons
+delete_button.pack(side=RIGHT, padx=5)
+edit_button.pack(side=LEFT, padx=5)
 
-    cancel_button = tk.Button(frame, text="Cancel", command=delete_window.destroy, bg='#0a2540', fg='white', font=('Helvetica', 12), width=8, height=1)
-    cancel_button.pack(side='left', padx=5)
+# Show Frame
+buttons_frame.pack(pady=5)
 
-    confirm_button = tk.Button(frame, text="Delete", command=confirm_delete, bg='#0a2540', fg='white', font=('Helvetica', 12), width=8, height=1)
-    confirm_button.pack(side='left', padx=5)
-
-# Create Edit and Delete buttons
-frame = tk.Frame(root, bg='#eaf6f8')
-frame.pack(pady=10)
-
-edit_button = tk.Button(frame, text="Edit", bg='#0a2540', fg='white', font=('Helvetica', 12), width=8, height=1 , cursor="hand2")
-edit_button.pack(padx=10 , side="left")
-
-delete_button = tk.Button(frame, text="Delete", bg='#0a2540', fg='white', font=('Helvetica', 12), width=8, height=1, command=delete_item , cursor="hand2")
-delete_button.pack(padx=10 , side="right")
-
-# Run the application
 root.mainloop()
+conn.close()
