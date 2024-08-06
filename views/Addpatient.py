@@ -43,7 +43,7 @@ def reset_frame():
     date_ent.insert(0, date.today().strftime('%Y-%m-%d'))
     date_ent.config(state='readonly')
     combo_stat.set('Select Status')
-    combo1_stat.set('Select Bloodtype')
+    combo1_stat.set('Select Doctor')
     radio_var.set(1)
 
 # Screen Center Function
@@ -58,7 +58,7 @@ def center_screen(root, w, h):
 
 #Button Add command
 def checker():
-    if user_ent.get() !='Enter patient name' and phone_ent.get() != 'Enter patient phone' and id_ent.get()!='Enter patient ID' and age_ent.get()!='Enter patient Age' and combo_stat.get()!='Select Status' and combo1_stat.get()!='Select Bloodtype' :
+    if user_ent.get() !='Enter patient name' and phone_ent.get() != 'Enter patient phone' and id_ent.get()!='Enter patient ID' and age_ent.get()!='Enter patient Age' and combo_stat.get()!='Select Status' and combo1_stat.get()!='Select Doctor' :
         messagebox.showinfo("Succeful", "Data added succefully.")
         reset_frame()
     else:
@@ -182,19 +182,20 @@ combo_stat_var.set('Select Status')
 combo_stat = Combobox(root, values=('White', 'Red', 'Blue','purple','yellow'), textvariable=combo_stat_var, state='readonly')
 combo_stat.place(x=300,y=400,width=200,height=30)
 
-#patient bloodType icon
-bloodicon_path = "images/BloodType.png"  # Use raw string for Windows path
-bloodimg = Image.open(bloodicon_path)
-bloodimg = bloodimg.resize((80, 80))
-bloodimg_tk = ImageTk.PhotoImage(bloodimg)
-phone_icon_label = Label(root, image=bloodimg_tk, relief='flat', borderwidth=0, highlightthickness=0)
+# Doctor Name icon
+doctor_name_path = "images/Doctor Icon.png"  # Use raw string for Windows path
+doctor_name_img = Image.open(doctor_name_path)
+doctor_name_img = doctor_name_img.resize((80, 80))
+doctor_name_tk = ImageTk.PhotoImage(doctor_name_img)
+phone_icon_label = Label(root, image=doctor_name_tk, relief='flat', borderwidth=0, highlightthickness=0)
 phone_icon_label.place(x=620, y=374)
 
 #bloodType combo box
 combo1_stat_var = StringVar()
-combo1_stat_var.set('Select Bloodtype')
-combo1_stat = Combobox(root, values=('White', 'Red', 'Blue','yellow','purple'), textvariable=combo1_stat_var, state='readonly')
+combo1_stat_var.set('Select Doctor')
+combo1_stat = Combobox(root, values=('Ahmed ', 'Hassan', 'Mohamed','Weliam','cris'), textvariable=combo1_stat_var, state='readonly')
 combo1_stat.place(x=700,y=400,width=200,height=30)
+
 
 #date icon
 dateicon_path = "images/calender.png"  # Use raw string for Windows path

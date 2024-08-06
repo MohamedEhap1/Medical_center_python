@@ -43,7 +43,7 @@ def reset_frame():
     date_ent.insert(0, date.today().strftime('%Y-%m-%d'))
     date_ent.config(state='readonly')
     combo_stat.set('Medical Specialty')
-    # combo1_stat.set('Select Bloodtype')
+    # combo1_stat.set('Select Doctor')
     radio_var.set(1)
 
 # Screen Center Function
@@ -67,7 +67,7 @@ def checker():
 
 # Initialize Tkinter root widget and title
 root = Tk()
-root.title("Add Patient")
+root.title("Add Doctor")
 font1 = ('times new roman', 14, 'bold')  # Updated font to bold
 
 # Style configuration for the radiobuttons
@@ -84,7 +84,7 @@ style.map("TRadiobutton",
 root.iconbitmap("images/Patient.ico")
 
 # Background Image
-img_path = "images/Add Patient.png"  # Use raw string for Windows path
+img_path = "images/Add Doctor.png"  # Use raw string for Windows path
 img = Image.open(img_path)
 img = img.resize((1500, 750))
 
@@ -182,7 +182,7 @@ combo_stat_var.set('Medical Specialty')
 combo_stat = Combobox(root, values=('Allergy and Immunology', 'Anesthesiology', 'Cardiology', 'Dermatology', 'Emergency Medicine', 'Family Medicine', 'Gastroenterology', 'Geriatrics', 'Hematology', 'Infectious Disease', 'Internal Medicine', 'Medical Genetics', 'Nephrology', 'Neurology', 'Neurosurgery', 'Obstetrics and Gynecology', 'Oncology', 'Ophthalmology', 'Orthopedic Surgery', 'Otolaryngology', 'Pathology', 'Pediatrics', 'Physical Medicine and Rehabilitation', 'Plastic Surgery', 'Preventive Medicine', 'Psychiatry', 'Pulmonology', 'Radiology', 'Surgery', 'Urology'), textvariable=combo_stat_var, state='readonly')
 combo_stat.place(x=300,y=400,width=200,height=30)
 
-#DoctorbloodType icon
+# # DoctorbloodType icon
 # bloodicon_path = "images/BloodType.png"  # Use raw string for Windows path
 # bloodimg = Image.open(bloodicon_path)
 # bloodimg = bloodimg.resize((80, 80))
@@ -192,8 +192,8 @@ combo_stat.place(x=300,y=400,width=200,height=30)
 
 # #bloodType combo box
 # combo1_stat_var = StringVar()
-# combo1_stat_var.set('Select Bloodtype')
-# combo1_stat = Combobox(root, values=('White', 'Red', 'Blue','yellow','purple'), textvariable=combo1_stat_var, state='readonly')
+# combo1_stat_var.set('Select Doctor')
+# combo1_stat = Combobox(root, values=('Ahmed ', 'Hassan', 'Mohamed','Weliam','cris'), textvariable=combo1_stat_var, state='readonly')
 # combo1_stat.place(x=700,y=400,width=200,height=30)
 
 #date icon
