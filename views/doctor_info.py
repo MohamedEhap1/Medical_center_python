@@ -218,6 +218,8 @@ def edit_Frame():
         entry_phone.pack(pady=5)
         #number patient 
         number_patient=doctor_data[4]
+        if number_patient is None:
+                number_patient=0
         #Gender
         gender=doctor_data[5]
         # Medical Speciality combo box
@@ -246,7 +248,7 @@ def edit_Frame():
                         new_date=date
                         new_number_patient=number_patient
                         # Update the patient's information in the database
-                        cur.execute('UPDATE patient SET name = ?, age = ?, phone = ?, number_patient = ?,gender = ?, medical_speciality = ?  ,datee = ? WHERE id = ?', 
+                        cur.execute('UPDATE doctor SET name = ?, age = ?, phone = ?, number_patient = ?,gender = ?, medical_speciality = ?  ,datee = ? WHERE id = ?', 
                                 (new_name, new_age, new_phone, new_number_patient,new_gender ,new_medical_speciality,new_date ,selected_doctor_id))
                         conn.commit()
 
