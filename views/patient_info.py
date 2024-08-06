@@ -180,10 +180,99 @@ def delete_item():
                 table.delete(selected_item)
         except IndexError:
                 messagebox.showwarning("Selection Error", "Please select a patient to delete.")
-# Delete and Edit Buttons
+# Delete button
 delete_button = Button(buttons_frame , text="Delete" , cursor="hand2" , style="TButton",command=delete_item)
-edit_button = Button(buttons_frame , text="Edit" , cursor="hand2" , style="TButton")
+# Edit button
+def edit_Frame():
+        # Create the edit confirmation window
+        edit_window = Toplevel(root)
+        edit_window.title("Edit Confirmation")
+        edit_window.configure(background='#eaf6f8')     
+        # Get the selected item from the table
+        selected_item = table.selection()
+        if not selected_item:
+                messagebox.showwarning("Selection Error", "Please select a patient to Edit.")
+                edit_window.destroy()
+                return
 
+        # Populate the form with the selected patient's data
+        selected_patient_id = table.item(selected_item[0])['values'][0]
+        cur.execute('SELECT * FROM patient WHERE id = ?', (selected_patient_id,))
+        patient_data = cur.fetchone()
+
+        # Name
+        Label(edit_window, text="Name", background='#eaf6f8', font=("Tahoma" , 12)).pack(pady=2)
+        entry_name = Entry(edit_window)
+        entry_name.insert(0, patient_data[1])
+        entry_name.pack(pady=5)
+
+        # Age
+        Label(edit_window, text="Age", background='#eaf6f8', font=("Tahoma" , 12)).pack(pady=2)
+        entry_age = Entry(edit_window)
+        entry_age.insert(0, str(patient_data[2]))
+        entry_age.pack(pady=5)
+
+        # Phone Number
+        Label(edit_window, text="Phone Number", background='#eaf6f8', font=("Tahoma" , 12)).pack(pady=2)
+        entry_phone = Entry(edit_window)
+        entry_phone.insert(0, patient_data[3])
+        entry_phone.pack(pady=5)
+
+        # Blood type combo box
+        combo2_stat_var = StringVar()
+        combo2_stat_var.set(patient_data[4])
+        combo2_stat = Combobox(edit_window, values=('A ', 'B', 'O','A+','C'), textvariable=combo2_stat_var, state='readonly')
+        combo2_stat.pack(pady=5)
+        #Gender
+        gender=patient_data[5]
+        # Patient status combo box
+        combo_stat_var = StringVar()
+        combo_stat_var.set(patient_data[6])
+        combo_stat = Combobox(edit_window, values=('White', 'Red', 'Blue','purple','yellow'), textvariable=combo_stat_var, state='readonly')
+        combo_stat.pack(pady=5)
+        # Name doctor combo box
+        combo3_stat_var = StringVar()
+        combo3_stat_var.set(patient_data[7])
+        combo3_stat = Combobox(edit_window, values=('Ahmed', 'Ali', 'mohamed'), textvariable=combo3_stat_var, state='readonly')
+        combo3_stat.pack(pady=5)
+        # Date
+        date=patient_data[8]
+
+
+        frame = Frame(edit_window)
+        frame.pack(pady=10)
+
+        cancel_button = Button(frame, text="Cancel", command=edit_window.destroy)
+        cancel_button.pack(side='left', padx=5)
+
+        def confirm_edit():
+                try:
+                        # Get the updated values from the form
+                        new_name = entry_name.get()
+                        new_age = int(entry_age.get())
+                        new_phone = entry_phone.get()
+                        new_status = combo_stat_var.get()
+                        new_blood_type = combo2_stat_var.get()
+                        new_gender=gender
+                        new_date=date
+                        new_doc_name=combo3_stat_var.get()
+
+                        # Update the patient's information in the database
+                        cur.execute('UPDATE patient SET name = ?, age = ?, phone = ?, blood_type = ?,gender = ?, status = ? ,nameDoc =? ,datee = ? WHERE id = ?', 
+                                (new_name, new_age, new_phone, new_blood_type,new_gender ,new_status,new_doc_name,new_date ,selected_patient_id))
+                        conn.commit()
+
+                        # Update the table with the new information
+                        table.item(selected_item[0], values=(selected_patient_id,new_name, new_age, new_phone, new_blood_type,new_gender ,new_status,new_doc_name,new_date ))
+                        messagebox.showinfo('Notification', 'The patient was edited successfully')
+                        edit_window.destroy()
+                except Exception as e:
+                        messagebox.showwarning("Error", str(e))
+
+        confirm_button = Button(frame, text="Edit", command=confirm_edit)
+        confirm_button.pack(side='left', padx=5)
+
+edit_button = Button(buttons_frame , text="Edit" , cursor="hand2" , style="TButton",command=edit_Frame)
 # Show Buttons
 delete_button.pack(side=RIGHT, padx=5)
 edit_button.pack(side=LEFT, padx=5)

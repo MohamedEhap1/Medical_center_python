@@ -178,9 +178,89 @@ def delete_item():
                 table.delete(selected_item)
         except IndexError:
                 messagebox.showwarning("Selection Error", "Please select a Doctor to delete.")
-# Delete and Edit Buttons
+# Delete button
 delete_button = Button(buttons_frame , text="Delete" , cursor="hand2" , style="TButton",command=delete_item)
-edit_button = Button(buttons_frame , text="Edit" , cursor="hand2" , style="TButton")
+
+# Edit button
+def edit_Frame():
+        # Create the edit confirmation window
+        edit_window = Toplevel(root)
+        edit_window.title("Edit Confirmation")
+        edit_window.configure(background='#eaf6f8')     
+        # Get the selected item from the table
+        selected_item = table.selection()
+        if not selected_item:
+                messagebox.showwarning("Selection Error", "Please select a Doctor to Edit.")
+                edit_window.destroy()
+                return
+
+        # Populate the form with the selected patient's data
+        selected_doctor_id = table.item(selected_item[0])['values'][0]
+        cur.execute('SELECT * FROM doctor WHERE id = ?', (selected_doctor_id,))
+        doctor_data = cur.fetchone()
+
+        # Name
+        Label(edit_window, text="Name", background='#eaf6f8', font=("Tahoma" , 12)).pack(pady=2)
+        entry_name = Entry(edit_window)
+        entry_name.insert(0, doctor_data[1])
+        entry_name.pack(pady=5)
+
+        # Age
+        Label(edit_window, text="Age", background='#eaf6f8', font=("Tahoma" , 12)).pack(pady=2)
+        entry_age = Entry(edit_window)
+        entry_age.insert(0, str(doctor_data[2]))
+        entry_age.pack(pady=5)
+
+        # Phone Number
+        Label(edit_window, text="Phone Number", background='#eaf6f8', font=("Tahoma" , 12)).pack(pady=2)
+        entry_phone = Entry(edit_window)
+        entry_phone.insert(0, doctor_data[3])
+        entry_phone.pack(pady=5)
+        #number patient 
+        number_patient=doctor_data[4]
+        #Gender
+        gender=doctor_data[5]
+        # Medical Speciality combo box
+        combo_stat_var = StringVar()
+        combo_stat_var.set(doctor_data[6])
+        combo_stat = Combobox(edit_window, values=('Family Medicin', 'boons', 'Pathology'), textvariable=combo_stat_var, state='readonly')
+        combo_stat.pack(pady=5)
+        # Date
+        date=doctor_data[7]
+
+
+        frame = Frame(edit_window)
+        frame.pack(pady=10)
+
+        cancel_button = Button(frame, text="Cancel", command=edit_window.destroy)
+        cancel_button.pack(side='left', padx=5)
+
+        def confirm_edit():
+                try:
+                        # Get the updated values from the form
+                        new_name = entry_name.get()
+                        new_age = int(entry_age.get())
+                        new_phone = entry_phone.get()
+                        new_medical_speciality = combo_stat_var.get()
+                        new_gender=gender
+                        new_date=date
+                        new_number_patient=number_patient
+                        # Update the patient's information in the database
+                        cur.execute('UPDATE patient SET name = ?, age = ?, phone = ?, number_patient = ?,gender = ?, medical_speciality = ?  ,datee = ? WHERE id = ?', 
+                                (new_name, new_age, new_phone, new_number_patient,new_gender ,new_medical_speciality,new_date ,selected_doctor_id))
+                        conn.commit()
+
+                        # Update the table with the new information
+                        table.item(selected_item[0], values=(selected_doctor_id,new_name, new_age, new_phone, new_number_patient,new_gender ,new_medical_speciality,new_date ))
+                        messagebox.showinfo('Notification', 'The patient was edited successfully')
+                        edit_window.destroy()
+                except Exception as e:
+                        messagebox.showwarning("Error", str(e))
+
+        confirm_button = Button(frame, text="Edit", command=confirm_edit)
+        confirm_button.pack(side='left', padx=5)
+
+edit_button = Button(buttons_frame , text="Edit" , cursor="hand2" , style="TButton",command=edit_Frame)
 
 # Show Buttons
 delete_button.pack(side=RIGHT, padx=5)
