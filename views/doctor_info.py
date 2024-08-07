@@ -3,6 +3,7 @@ from tkinter.ttk import *
 from PIL import Image, ImageTk
 from tkinter import messagebox
 import sqlite3
+import os
 root = Tk()
 root.config(background="#EBF4F6") # frame background color
 root.title("Doctor Info")
@@ -48,7 +49,8 @@ table = Treeview(table_frame , columns=cols , show="headings" ,
 # back button
 def backBtn():
         root.destroy()
-        import dashboard
+        os.system("python views/dashboard.py")
+        
 back_img = Image.open("images/BackBtn.png")
 back_tk = ImageTk.PhotoImage(back_img)
 back_button = Button(root, image=back_tk,command=backBtn)
@@ -219,7 +221,8 @@ def edit_Frame():
         #number patient 
         number_patient=doctor_data[4]
         if number_patient is None:
-                number_patient=0
+                number_patient=1
+        else: number_patient+=1        
         #Gender
         gender=doctor_data[5]
         # Medical Speciality combo box

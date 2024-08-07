@@ -4,6 +4,7 @@ from tkinter.ttk import Combobox, Radiobutton, Style  # Import Style from ttk
 from PIL import Image, ImageTk
 from datetime import date
 import sqlite3
+import os
 # Placeholder class
 class PlaceholderEntry(Entry):
     def __init__(self, master=None, placeholder="", *args, **kwargs):
@@ -49,7 +50,7 @@ def reset_frame():
     date_ent.config(state='readonly')
     combo_stat.set('Medical Specialty')
     # combo1_stat.set('Select Doctor')
-    radio_var.set(1)
+    radio_var.set("Male")
 
 # Screen Center Function
 def center_screen(root, w, h):
@@ -152,12 +153,12 @@ gen_icon_label = Label(root, image=genimg_tk, relief='flat', borderwidth=0, high
 gen_icon_label.place(x=970, y=252)
 
 # Gender radiobuttons
-radio_var = IntVar()
-radio_var.set(1)
+radio_var = StringVar()
+radio_var.set('Male')
 
 # Create and place radiobuttons
-rbtn1 = Radiobutton(root, text="Male", value=1, variable=radio_var)
-rbtn2 = Radiobutton(root, text="Female", value=2, variable=radio_var)
+rbtn1 = Radiobutton(root, text="Male", value="Male", variable=radio_var)
+rbtn2 = Radiobutton(root, text="Female", value="Female", variable=radio_var)
 rbtn1.pack(padx=110,pady=110)
 rbtn2.pack(padx=110,pady=110)
 rbtn1.place(x=1050, y=274, width=100, height=30)
@@ -235,7 +236,7 @@ addbtn.place(x=1050,y=400,width=200,height=30)
 # back button
 def backBtn():
     root.destroy()
-    import dashboard
+    os.system("python views/dashboard.py")
 back_img = Image.open("images/BackBtn.png")
 back_tk = ImageTk.PhotoImage(back_img)
 back_button = Button(root, image=back_tk,relief='flat',command=backBtn)

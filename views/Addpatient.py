@@ -4,6 +4,7 @@ from tkinter.ttk import Combobox, Radiobutton, Style  # Import Style from ttk
 from PIL import Image, ImageTk
 from datetime import date
 import sqlite3
+import os
 # Placeholder class
 class PlaceholderEntry(Entry):
     def __init__(self, master=None, placeholder="", *args, **kwargs):
@@ -201,7 +202,7 @@ phone_icon_label.place(x=220, y=374)
 #patient status combo box
 combo_stat_var = StringVar()
 combo_stat_var.set('Select Status')
-combo_stat = Combobox(root, values=('White', 'Red', 'Blue','purple','yellow'), textvariable=combo_stat_var, state='readonly')
+combo_stat = Combobox(root, values=('Allergy and Immunology', 'Anesthesiology', 'Cardiology', 'Dermatology', 'Emergency Medicine', 'Family Medicine', 'Gastroenterology', 'Geriatrics', 'Hematology', 'Infectious Disease', 'Internal Medicine', 'Medical Genetics', 'Nephrology', 'Neurology', 'Neurosurgery', 'Obstetrics and Gynecology', 'Oncology', 'Ophthalmology', 'Orthopedic Surgery', 'Otolaryngology', 'Pathology', 'Pediatrics', 'Physical Medicine and Rehabilitation', 'Plastic Surgery', 'Preventive Medicine', 'Psychiatry', 'Pulmonology', 'Radiology', 'Surgery', 'Urology'), textvariable=combo_stat_var, state='readonly')
 combo_stat.place(x=300,y=400,width=200,height=30)
 
 # blood_type  icon
@@ -252,7 +253,8 @@ addbtn.place(x=700,y=500,width=200,height=30)
 # back button
 def backBtn():
     root.destroy()
-    import dashboard
+    os.system("python views/dashboard.py")
+    
 back_img = Image.open("images/BackBtn.png")
 back_tk = ImageTk.PhotoImage(back_img)
 back_button = Button(root, image=back_tk,relief='flat',command=backBtn)

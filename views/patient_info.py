@@ -3,6 +3,7 @@ from tkinter.ttk import *
 from PIL import Image, ImageTk
 from tkinter import messagebox
 import sqlite3
+import os
 root = Tk()
 root.config(background="#EBF4F6") # frame background color
 root.title("Patient Info")
@@ -48,7 +49,8 @@ table = Treeview(table_frame , columns=cols , show="headings" ,
 # back button
 def backBtn():
         root.destroy()
-        import dashboard
+        os.system("python views/dashboard.py")
+        
 back_img = Image.open("images/BackBtn.png")
 back_tk = ImageTk.PhotoImage(back_img)
 back_button = Button(root, image=back_tk,command=backBtn)

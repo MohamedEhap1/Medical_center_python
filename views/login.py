@@ -3,6 +3,7 @@ from tkinter import messagebox
 from tkinter.ttk import Combobox, Radiobutton, Style  # Import Style from ttk
 from PIL import Image, ImageTk
 from datetime import date
+import os
 # Placeholder class
 class PlaceholderEntry(Entry):
     def __init__(self, master=None, placeholder="", *args, **kwargs):
@@ -50,7 +51,7 @@ def checker():
     if user_ent.get() !='Enter Username' and user_ent.get()==username and  pass_ent.get() !='**********' and pass_ent.get()==password:
         messagebox.showinfo("Succeful", "Log in succesfully.")
         root.destroy()
-        import dashboard
+        os.system("python views/dashboard.py")
     else:
         messagebox.showerror("Error", "Wrong Username or Password.")
 # Initialize Tkinter root widget and title
